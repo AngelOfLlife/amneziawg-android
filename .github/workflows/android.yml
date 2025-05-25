@@ -27,7 +27,7 @@ jobs:
       run: chmod +x ./gradlew
 
     - name: Build release APK
-      run: ./gradlew :app:assembleRelease
+      run: ./gradlew :client:assembleRelease
 
     - name: Show APK locations
       run: |
@@ -35,6 +35,10 @@ jobs:
         find . -type f -name "*.apk"
 
     - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AmneziaWG-release
+        path: '**/release/*.apk'    - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: AmneziaWG-release
