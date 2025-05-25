@@ -38,13 +38,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: AmneziaWG-release
-        path: '**/release/*.apk'    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: AmneziaWG-release
-        path: '**/*.apk'
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: AmneziaWG-release
-        path: '**/build/outputs/apk/**/*.apk'
+        path: '**/release/*.apk'
