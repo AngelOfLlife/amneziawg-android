@@ -37,4 +37,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: AmneziaWG-release
-        path: client/build/outputs/apk/release/*.apk        path: client/build/outputs/apk/release/*.apk
+        path: client/build/outputs/apk/release/*.apk
