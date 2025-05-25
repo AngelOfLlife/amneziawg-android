@@ -1,4 +1,4 @@
-name: Build AmneziaWG Android
+name: Build Full Project
 
 on:
   push:
@@ -27,14 +27,14 @@ jobs:
     - name: Grant execute permission for Gradle Wrapper
       run: chmod +x ./gradlew
 
-    - name: Build release APK
+    - name: Assemble all release APKs
       run: ./gradlew assembleRelease --no-daemon --stacktrace
 
-    - name: List built APKs
+    - name: Find all APKs
       run: find . -name "*.apk"
 
-    - name: Upload APK artifact
+    - name: Upload all APKs as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: AmneziaWG-release
-        path: app/build/outputs/apk/release/*.apk
+        name: All-Release-APKs
+        path: '**/*.apk'
