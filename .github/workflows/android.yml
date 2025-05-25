@@ -1,40 +1,64 @@
-name: Build Full Project
+name: Build and Self-Sign APK
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository with submodules
+    - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
-    - name: Set up JDK 17 (Temurin)
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: 17
-        cache: gradle
 
-    - name: Grant execute permission for Gradle Wrapper
+    - name: Grant execute permission
       run: chmod +x ./gradlew
 
-    - name: Assemble all release APKs
-      run: ./gradlew assembleRelease --no-daemon --stacktrace
+    - name: Generate debug keystore
+      run: |
+        keytool -genkey -v \
+          -keystore debug.keystore \
+          -storepass android \
+          -alias androiddebugkey \
+          -keypass android \
+          -dname "CN=Android Debug,O=Android,C=US" \
+          -keyalg RSA -keysize 2048 -validity 10000
 
-    - name: Find all APKs
-      run: find . -name "*.apk"
+    - name: Set signing env
+      run: |
+        echo "KEYSTORE_PATH=$(pwd)/debug.keystore" >> $GITHUB_ENV
+        echo "KEYSTORE_PASSWORD=android" >> $GITHUB_ENV
+        echo "KEY_ALIAS=androiddebugkey" >> $GITHUB_ENV
+        echo "KEY_PASSWORD=android" >> $GITHUB_ENV
 
-    - name: Upload all APKs as artifact
+    - name: Build signed APK
+      run: ./gradlew assembleRelease
+
+    - name: Sign APK manually (если gradle не подписывает)
+      run: |
+        APK=$(find . -name "*-release-unsigned.apk" | head -n 1)
+        echo "Found APK: $APK"
+        jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+          -keystore debug.keystore \
+          -storepass android \
+          -keypass android \
+          "$APK" androiddebugkey
+
+    - name: Verify APK signature
+      run: |
+        APK=$(find . -name "*-release-unsigned.apk" | head -n 1)
+        jarsigner -verify "$APK"
+
+    - name: Upload signed APK
       uses: actions/upload-artifact@v4
       with:
-        name: All-Release-APKs
-        path: '**/*.apk'
+        name: signed-apk
+        path: |
+          **/*-release-unsigned.apk
