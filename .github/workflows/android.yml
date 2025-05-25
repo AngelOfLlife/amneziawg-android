@@ -17,21 +17,24 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Set up JDK 17
+    - name: Set up JDK 17 (Temurin)
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: 17
+        cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x ./client/gradlew
+    - name: Grant execute permission for root Gradle Wrapper
+      run: chmod +x ./gradlew
 
-    - name: Build release APK
-      working-directory: ./client
-      run: ./gradlew assembleRelease
+    - name: Build release APK in client/
+      run: ./gradlew -p client assembleRelease --no-daemon --stacktrace
+
+    - name: Debug — покажем все APK-файлы
+      run: ls -R client/build/outputs/apk/
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: AmneziaWG-release
-        path: client/build/outputs/apk/release/*.apk
+        path: client/build/outputs/apk/release/*.apk        path: client/build/outputs/apk/release/*.apk
