@@ -27,10 +27,10 @@ jobs:
       run: chmod +x ./gradlew
 
     - name: Build release APK
-      run: ./gradlew :client:assembleRelease
+      run: ./gradlew assembleRelease
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: AmneziaWG-release
-        path: client/build/outputs/apk/release/*.apk
+        path: build/outputs/apk/release/*.apk
