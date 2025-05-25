@@ -24,17 +24,17 @@ jobs:
         java-version: 17
         cache: gradle
 
-    - name: Grant execute permission for root Gradle Wrapper
+    - name: Grant execute permission for Gradle Wrapper
       run: chmod +x ./gradlew
 
-    - name: Build release APK in client/
-      run: ./gradlew -p client assembleRelease --no-daemon --stacktrace
+    - name: Build release APK
+      run: ./gradlew assembleRelease --no-daemon --stacktrace
 
-    - name: Debug — покажем все APK-файлы
-      run: ls -R client/build/outputs/apk/
+    - name: List built APKs
+      run: find . -name "*.apk"
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: AmneziaWG-release
-        path: client/build/outputs/apk/release/*.apk
+        path: app/build/outputs/apk/release/*.apk
